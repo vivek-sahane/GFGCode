@@ -29,47 +29,34 @@ class GFG
             if(ans)
                 System.out.println("1");
             else System.out.println("0");
-       }
+       
+System.out.println("~");
+}
     }
 }
 // } Driver Code Ends
 
-
-class Solution
-{
-    private boolean check(int start, int V,ArrayList<ArrayList<Integer>>adj, int[]color ){
-        Queue<Integer> q = new LinkedList<>();
-        q.add(start);
-        color[start]=0;
-        
-        while(!q.isEmpty()){
-            int node = q.peek();
-            q.remove();
-            
-            for(int it: adj.get(node)){
-                if(color[it]==-1){
-                    color[it]= 1- color[node];
-                    q.add(it);
-                }
-                
-                else if(color[it]==color[node]){
+class Solution {
+    private boolean dfs(int node, int col, int[] color, ArrayList<ArrayList<Integer>> adj) {
+        color[node] = col;
+        for (int it : adj.get(node)) {
+            if (color[it] == -1) {
+                if (!dfs(it, 1 - col, color, adj)) {
                     return false;
                 }
+            } else if (color[it] == col) {
+                return false;
             }
         }
         return true;
     }
     
-    public boolean isBipartite(int V, ArrayList<ArrayList<Integer>>adj)
-    {
-        int[]color = new int[V];
-        for(int i=0;i<V;i++){
-            color[i]=-1;
-        }
-        
-        for(int i=0;i<V;i++){
-            if(color[i]==-1){
-                if(check(i,V,adj,color)==false){
+    public boolean isBipartite(int V, ArrayList<ArrayList<Integer>> adj) {
+        int[] color = new int[V];
+        Arrays.fill(color, -1); // Initialize color array to -1
+        for (int i = 0; i < V; i++) {
+            if (color[i] == -1) {
+                if (!dfs(i, 0, color, adj)) {
                     return false;
                 }
             }
@@ -77,3 +64,6 @@ class Solution
         return true;
     }
 }
+
+
+
