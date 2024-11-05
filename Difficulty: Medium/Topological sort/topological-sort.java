@@ -54,33 +54,48 @@ class Main {
 
 // } Driver Code Ends
 
+
 class Solution {
-    
-    private static void dfs(ArrayList<ArrayList<Integer>> adj, int node, Stack<Integer> st, int[] vis) {
-        vis[node] = 1;
-        for (int it : adj.get(node)) {
-            if (vis[it] == 0) {
-                dfs(adj, it, st, vis);
+    // Function to return list containing vertices in Topological order.
+    static ArrayList<Integer> topologicalSort(ArrayList<ArrayList<Integer>> adj) {
+        
+        int V = adj.size();
+        int[] indegree = new int[V];
+        
+        // Calculate indegree for each node
+        for (int i = 0; i < V; i++) {
+            for (int it : adj.get(i)) {
+                indegree[it]++;
             }
         }
-        st.push(node);
-    }
-    
-    static ArrayList<Integer> topologicalSort(ArrayList<ArrayList<Integer>> adj) {
-        int V = adj.size();
-        Stack<Integer> st = new Stack<>();
-        int[] vis = new int[V];
         
+        Queue<Integer> q = new LinkedList<>();
+        
+        // Add all nodes with 0 indegree to the queue
         for (int i = 0; i < V; i++) {
-            if (vis[i] == 0) {
-                dfs(adj, i, st, vis);
+            if (indegree[i] == 0) {
+                q.add(i);
             }
         }
         
         ArrayList<Integer> ans = new ArrayList<>();
-        while (!st.isEmpty()) {
-            ans.add(st.pop());
+        
+        // Process nodes in topological order
+        while (!q.isEmpty()) {
+            int node = q.remove();
+            ans.add(node);
+            
+            for (int it : adj.get(node)) {
+                indegree[it]--;
+                if (indegree[it] == 0) {
+                    q.add(it);
+                }
+            }
         }
+        
         return ans;
     }
 }
+
+
+
