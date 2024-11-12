@@ -41,45 +41,48 @@ System.out.println("~");
 // } Driver Code Ends
 
 
-// User function Template for Java
-
 class Solution {
-
-    boolean dfsC(int node, List<List<Integer>> adj, int[] vis, int[] path,int[]safe) {
-        vis[node] = 1;
-        path[node] = 1;
-
-        for (int it : adj.get(node)) {
-            if (vis[it] == 0) {
-                if (dfsC(it, adj, vis, path,safe)) return true;
-            } else if (path[it] == 1) return true;
-        }
-
-        path[node] = 0;
-        safe[node] = 1;
-        return false;
-    }
-
-    List<Integer> eventualSafeNodes(int V, List<List<Integer>> adj) {
-        int[] vis = new int[V];
-        int[] path = new int[V];
-        int[] safe = new int[V];
-        List<Integer> arr = new ArrayList<>();
-
+    public List<Integer> eventualSafeNodes(int V, List<List<Integer>> adj) {
+        
+        // Reverse the adjacency list to build graph of nodes pointing to each node
+        List<List<Integer>> adjRev = new ArrayList<>();
         for (int i = 0; i < V; i++) {
-            if (vis[i] == 0 ) {
-                dfsC(i, adj, vis, path, safe);
+            adjRev.add(new ArrayList<>());
+        }
+        
+        int[] indegree = new int[V];
+        for (int i = 0; i < V; i++) {
+            for (int it : adj.get(i)) {
+                adjRev.get(it).add(i);  // Reverse the direction of edges
+                indegree[i]++;
             }
         }
         
-        for(int i=0;i<V;i++){
-            if(safe[i]==1){
-                arr.add(i);
+        Queue<Integer> q = new LinkedList<>();
+        List<Integer> safeNodes = new ArrayList<>();
+        
+        // Initialize queue with nodes having indegree 0
+        for (int i = 0; i < V; i++) {
+            if (indegree[i] == 0) {
+                q.add(i);
             }
         }
         
-        Collections.sort(arr);
-        return arr;
+        // Process nodes in topological order
+        while (!q.isEmpty()) {
+            int node = q.poll();
+            safeNodes.add(node);
+            
+            for (int it : adjRev.get(node)) {
+                indegree[it]--;
+                if (indegree[it] == 0) {
+                    q.add(it);
+                }
+            }
+        }
+        
+        Collections.sort(safeNodes);
+        return safeNodes;
     }
 }
 
